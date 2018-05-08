@@ -1,0 +1,25 @@
+{
+  "name": "netsuite-plugin",
+  "version": "1.0.0",
+  "description": "NetSuite plugin from Buildateam",
+  "main": "register.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Buildateam/netsuite-plugin.git"
+  },
+  "author": "buildateam.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Buildateam/netsuite-plugin/issues"
+  },
+  "homepage": "https://github.com/Buildateam/netsuite-plugin#readme",
+  "dependencies": {
+    "netsuite-js": "git+https://github.com/alienw8/netsuite-js.git"
+  }
+}

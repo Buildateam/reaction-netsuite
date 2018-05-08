@@ -1,6 +1,5 @@
-import { Reaction } from "server/api";
-import { Packages } from "lib/collections";
-import { Logger } from "imports/plugins/custom/realtime-logs";
+import { Reaction, Logger } from "/server/api";
+import { Packages } from "/lib/collections";
 import Fiber from "fibers";
 import NetSuite from "netsuite-js";
 
@@ -21,19 +20,27 @@ const q = asyncLib.queue(({ promise }, callback) => {
 }, 1);
 
 export const getSettings = () => {
+
+  if (!Packages ) return Logger.error({ message: "Packages is not found!" }, "Packages is not found!");
+
   const data = Packages.findOne({
-    name: "netsuite-sync",
-    shopId: Reaction.getShopId()
-  });
-  return data ? data.settings : null;
+                                    name: "netsuite-sync",
+                                    shopId: Reaction.getShopId()
+                                  });
+
+  if (!data) return Logger.error({ message: "NetSuite is not found!" }, "NetSuite Package is not found!");
+
+  return data;
 };
 
 export const initConfig = () => {
-  let config = null;
   const credentials = getSettings();
-  if (credentials) {
-    config = new NetSuite.Configuration(credentials);
-  }
+
+  if (!credentials) return Logger.error({ message: "NetSuite Package is not credentials!" }, "NetSuite Package is not credentials!");
+
+  const config = new NetSuite.Configuration(credentials);
+  if (!config) return Logger.error({ message: "NetSuite Package is not config!" }, "NetSuite Package is not config!");
+
   return config;
 };
 

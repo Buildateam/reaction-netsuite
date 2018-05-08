@@ -1,6 +1,7 @@
 import { Random } from "meteor/random";
 import { Mongo } from "meteor/mongo";
-import { SimpleSchema } from "meteor/aldeed:simple-schema";
+// import { SimpleSchema } from "meteor/aldeed:simple-schema";
+import SimpleSchema from "simpl-schema";
 
 export const NetSuiteJobsSchema = new SimpleSchema({
   orderId: {

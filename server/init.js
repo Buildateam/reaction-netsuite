@@ -1,14 +1,16 @@
 /* eslint-disable no-console */
+
 import { Hooks, Logger } from "/server/api";
 import { Jobs, Orders } from "/lib/collections";
 import Fiber from "fibers";
 import NetSuite from "netsuite-js";
 import { createRequest, recreateConnection, getService } from "./connection";
-import { registerSchema } from "/imports/plugins/core/collections/lib/registerSchema";
-import { SimpleSchema } from "meteor/aldeed:simple-schema";
+import { OrderAfterCreateNetsuiteSync} from "./meteorMethods";
+import { registerSchema } from "@reactioncommerce/schemas";
+import SimpleSchema from "simpl-schema";
 import { NetSuiteJobs } from "./collection";
+import {Meteor} from "meteor/meteor";
 import { Job } from "/imports/plugins/core/job-collection/lib";
-import { Meteor } from "meteor/meteor";
 
 function sessionTimeline() {
   Fiber(() => setInterval(() => {
@@ -66,6 +68,7 @@ function jobProcess() {
         if (nsJobOrder) {
           if (((new Date().getTime() - nsJobOrder.lastCall.getTime()) / 1000) > 30) {
             const order = Orders.findOne({ _id: nsJobOrder.orderId });
+
             if (order) {
               if (!order.isExportedToNetsuite) {
                 NetSuiteJobs.update(
@@ -76,7 +79,8 @@ function jobProcess() {
                     }
                   }
                 );
-                Meteor.call("OrderAfterCreateNetsuiteSync", order._id, (err) => Logger.error(err));
+                OrderAfterCreateNetsuiteSync( order._id, err);
+                //Meteor.call("OrderAfterCreateNetsuiteSync", order._id, (err) => Logger.error(err));
               } else {
                 NetSuiteJobs.remove({
                   orderId: nsJobOrder.orderId
@@ -97,9 +101,9 @@ function jobProcess() {
             status: "new"
           });
           if (!nsJobOrder) {
-            // nsJobOrder = NetSuiteJobs.findOne({
-            //   status: "fail"
-            // });
+            nsJobOrder = NetSuiteJobs.findOne({
+              status: "fail"
+            });
           }
           if (nsJobOrder) {
             NetSuiteJobs.update(
@@ -111,7 +115,8 @@ function jobProcess() {
                 }
               }
             );
-            Meteor.call("OrderAfterCreateNetsuiteSync", nsJobOrder.orderId, (err) => Logger.error(err));
+            OrderAfterCreateNetsuiteSync( order._id, err);
+            //Meteor.call("OrderAfterCreateNetsuiteSync", nsJobOrder.orderId, (err) => Logger.error(err));
           }
         }
         const jobId = job && job._doc && job._doc._id ? job._doc._id : null;
@@ -148,9 +153,12 @@ function extendOrderSchema() {
       defaultValue: "none"
     },
     exportedErrors: {
-      type: [String],
+      type: Array,
       optional: true,
       defaultValue: []
+    },
+    "exportedErrors.$": {
+      type: String
     }
   });
 
@@ -159,17 +167,18 @@ function extendOrderSchema() {
 }
 
 function orderJob() {
-  Jobs.remove({
-    type: "netsuite/orderInsert"
-  });
+
+   Jobs.remove({
+     type: "netsuite/orderInsert"
+   });
   return new Job(Jobs, "netsuite/orderInsert", {})
-    .priority("normal")
-    .retry({ retries: Jobs.forever, wait: 1000 })
-    .repeat({ repeats: Jobs.forever, wait: 1000 })
-    .save();
+     .priority("normal")
+     .retry({ retries: Jobs.forever, wait: 1000 })
+     .repeat({ repeats: Jobs.forever, wait: 1000 })
+     .save();
 }
 
-Orders.after.insert((userId, doc) => {
+Hooks.Events.add("afterOrderInsert", (userId, doc) => {
   NetSuiteJobs.insert({
     orderId: doc._id
   });
@@ -177,13 +186,14 @@ Orders.after.insert((userId, doc) => {
 
 Hooks.Events.add("afterCoreInit", () => {
   extendOrderSchema();
+
   recreateConnection(() => {
-    Fiber(() => {
-      // eslint-disable-next-line semi
-      console.log("connection ns success");
-      orderJob();
-      jobProcess();
-      sessionTimeline();
-    }).run();
+      Fiber(() => {
+       // eslint-disable-next-line semi
+          console.log("connection ns success");
+          orderJob();
+          jobProcess();
+          sessionTimeline();
+      }).run();
   });
 });

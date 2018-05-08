@@ -7,7 +7,7 @@ import accounting from "accounting-js";
 import { Reaction } from "/server/api";
 import { SSR } from "meteor/meteorhacks:ssr";
 import { Meteor } from "meteor/meteor";
-import { Logger } from "imports/plugins/custom/realtime-logs";
+import { Logger } from "/server/api";
 import { check } from "meteor/check";
 import { NetSuiteJobs } from "./collection";
 import { Shipping, Accounts, Orders, Media, Shops } from "/lib/collections";
@@ -964,7 +964,7 @@ const getNSPaymentMethod = async (orderId) => {
   }
 };
 
-const OrderAfterCreateNetsuiteSync = async (orderId) => {
+export const OrderAfterCreateNetsuiteSync = async (orderId) => {
   // @TODO - payment methods ["PaypalExpress", "Example", "AuthNet"]
   // "billing.paymentMethod.transactions.accountType" = "MasterCard" || "Visa"  || "AmericanExpress" || "Discover" ||
   check(orderId, String);
@@ -979,7 +979,7 @@ const OrderAfterCreateNetsuiteSync = async (orderId) => {
     }
     if (order) {
       if (!order.email) {
-        let email = "admin@zzperformance.com";
+        let email = "undefined@undefined";
         const account = Accounts.findOne({ _id: order.userId });
         if (account.emails.length) {
           email = account.emails[0].address;
@@ -1141,12 +1141,12 @@ const OrderAfterCreateNetsuiteSync = async (orderId) => {
 /* </Orders> */
 
 const recreateNetsuiteConnection = () => {
-  recreateConnection();
+  console.log('-----recreateNetsuiteConnection', Meteor.isClient)
+  return recreateConnection();
 };
 
 Meteor.methods({
   getCustomerFromNetsuite,
-  OrderAfterCreateNetsuiteSync,
-  recreateNetsuiteConnection,
-  updateNSOrderJob
+  updateNSOrderJob,
+  recreateNetsuiteConnection
 });

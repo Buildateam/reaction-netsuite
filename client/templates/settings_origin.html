@@ -1,0 +1,33 @@
+<template name="netsuiteSyncSettings">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">Netsuite Connection</h4>
+    </div>
+    <div class="panel-body">
+      <hr />
+      <h3>General config</h3>
+      <hr />
+      {{#autoForm collection=Collections.Packages schema=Schemas.NetSuiteConfigPackageConfig doc=packageData
+                  type="update" id="netsuiteSyncUpdateForm"}}
+        {{>afQuickField name="settings.email" label="Email"}}
+        {{>afQuickField name="settings.password" label="Password" type="password" }}
+        {{>afQuickField name="settings.account" label="Account"}}
+        {{>afQuickField name="settings.role" label="Role"}}
+        {{>afQuickField name="settings.applicationId" label="ApplicationId"}}
+        {{>afQuickField name="settings.webservicesDomain" label="Webservices Domain"}}
+        {{>afQuickField name="settings.errorEmails" label="Error emails"}}
+        <hr />
+        <h3>Payment config (NS associate)</h3>
+        <hr />
+        {{>afQuickField name="settings.paymentConfig.PaypalExpress" label="PaypalExpress"}}
+        {{>afQuickField name="settings.paymentConfig.MasterCard" label="MasterCard"}}
+        {{>afQuickField name="settings.paymentConfig.Visa" label="Visa"}}
+        {{>afQuickField name="settings.paymentConfig.AmericanExpress" label="AmericanExpress"}}
+        {{>afQuickField name="settings.paymentConfig.Discover" label="Discover"}}
+        {{>afQuickField name="settings.paymentConfig.Affirm" label="Affirm"}}
+        <hr />
+        <button type="submit" class="rui btn btn-danger pull-right" onclick="{{onSubmit}}">Save Changes</button>
+      {{/autoForm}}
+    </div>
+  </div>
+</template>

@@ -1,5 +1,6 @@
 /* eslint-disable quote-props */
 import { Reaction } from "/server/api";
+// import UINetSuite from "./client/ui";
 
 Reaction.registerPackage({
   label: "Netsuite",
@@ -33,3 +34,7 @@ Reaction.registerPackage({
     template: "netsuiteSyncSettings"
   }]
 });
+
+
+
+// template: "netsuiteSyncSettings"
