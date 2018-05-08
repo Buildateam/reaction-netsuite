@@ -9,7 +9,6 @@ const asyncLib = require("async");
 let service = null;
 let serviceClient = null;
 let client = null;
-// let createTime = Date.now() / 1000;
 
 const q = asyncLib.queue(({ promise }, callback) => {
   promise()
@@ -45,7 +44,6 @@ export const createService = (cb) => {
       service = new NetSuite.Service(config);
       serviceClient = service.init(true)
         .then((argClient) => {
-          // Logger.info({}, "netsuite complete init wsdl");
           cb(null, argClient);
         })
         .catch((err) => {

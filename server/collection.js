@@ -1,5 +1,3 @@
-// import _ from "lodash";
-// import { Meteor } from "meteor/meteor";
 import { Random } from "meteor/random";
 import { Mongo } from "meteor/mongo";
 import { SimpleSchema } from "meteor/aldeed:simple-schema";

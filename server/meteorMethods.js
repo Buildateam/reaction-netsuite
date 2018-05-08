@@ -176,9 +176,7 @@ const sendErrorMail = async (errors, orderId) => {
               }
             });
           }
-          // dstEmails.push("support+zzp@buildateam.io");
           // dstEmails.push("alexandr@buildateam.io");
-          // dstEmails.push("kyla@zzperformance.com");
         }
       }
       _.each(dstEmails, to => {
@@ -300,9 +298,6 @@ const createAddressObject = (addr) => {
         address[keys.netsuite] = value;
       }
     });
-    // if (!address.addr2) {
-    //   address.addr2 = address.addr1;
-    // }
     return address;
   } catch (err) {
     Logger.error(err.message, "createAddressObject");
