@@ -8,14 +8,14 @@ const composer = (props, onData) => {
 
   const subscription = Reaction.Subscriptions.Packages;
 
-  const netsuite = {
+  const netsuiteSync = {
     name: "netsuite-sync",
     shopId: Reaction.getShopId()
   };
 
   if (subscription.ready()) {
-    const packages = Packages.find(netsuite);
-    onData(null, { packages });
+    const netsuite = Packages.find(netsuiteSync);
+    onData(null, { netsuite });
   };
 }
 
