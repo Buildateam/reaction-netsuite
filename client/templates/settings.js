@@ -6,10 +6,10 @@ import { Meteor } from "meteor/meteor";
 import { NetSuiteConfig } from "../../lib/collections/schemas";
 
 
-console.log('+++++++', Packages, Packages.findOne({
-                                                name: "netsuite-sync",
-                                                shopId: Reaction.getShopId()
-                                    }));
+// console.log('+++++++', Packages, Packages.findOne({
+//                                                 name: "netsuite-sync",
+//                                                 shopId: Reaction.getShopId()
+//                                     }));
 
 
 
@@ -18,10 +18,14 @@ Template.netsuiteSyncSettings.helpers({
     return NetSuiteConfig;
   },
   packageData() {
-    return Packages.findOne({
+    const packages = Packages.findOne({
       name: "netsuite-sync",
       shopId: Reaction.getShopId()
     });
+
+    console.log('---', packages, NetSuiteConfig.schema());
+
+    return packages[0];
   },
   onSubmit() {
     Meteor.call("recreateNetsuiteConnection");

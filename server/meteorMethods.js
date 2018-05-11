@@ -1141,12 +1141,20 @@ export const OrderAfterCreateNetsuiteSync = async (orderId) => {
 /* </Orders> */
 
 const recreateNetsuiteConnection = () => {
-  console.log('-----recreateNetsuiteConnection', Meteor.isClient)
+  console.log('-----recreateNetsuiteConnection', Meteor.isClient, Meteor.isAdmin)
   return recreateConnection();
 };
+
+const updateSttings = (data) => {
+  check(data, Object);
+
+  //@TODO Make update Packages to new settings. Ckeck work.
+  console.log('------ Update settings ------', data);
+}
 
 Meteor.methods({
   getCustomerFromNetsuite,
   updateNSOrderJob,
-  recreateNetsuiteConnection
+  recreateNetsuiteConnection,
+  updateSttings
 });

@@ -1,15 +1,19 @@
 import React, {Component} from 'react';
 //import { NetSuiteConfig } from "../../../lib/collections/schemas";
+//
 import SettingsField from './SettingsField';
+import { Meteor } from "meteor/meteor";
+import { Packages } from "/lib/collections";
+import {Reaction} from "../../../../../../../client/api";
 
 class UINetSuite extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      account: "1111111111111111111",
-      applicationId:"11111111111111",
-      email:"1111111111111",
-      password: "11111111111111",
+      account: "",
+      applicationId:"",
+      email:"",
+      password: "",
       paymentConfig: {
         PaypalExpress: "Paypal",
         MasterCard: "Master Card",
@@ -41,6 +45,11 @@ class UINetSuite extends Component {
     const target = event.target;
     const name = target.name;
 
+    if (this.state[name].length > 40){
+      alert("Very long string "+ name);
+      return;
+    }
+
     this.setState({
       [name]: event.target.value
     });
@@ -48,24 +57,43 @@ class UINetSuite extends Component {
     console.log('state', this.state);
   }
 
-  handleInputChangePay(event) {
+  handleInputChangePay(event){
     const target = event.target;
     const name = target.name;
 
-    const paySystem = "paymentConfig."+[name];
+    const value = event.target.value.toString();
 
-    const pay = Object.assign({}, this.state.paymentConfig, {paySystem: event.target.value} );
-    console.log('---', pay);
+    if (this.state.paymentConfig[name].length > 40){
+       alert("Very long string "+ name);
+       return;
+    }
 
-    // this.setState((this.state.[name], event.target.value) =>{
-    //   console.log('------------', this.state.[name], event.target.value)
-    //   return {this.state.[name]: event.target.value}
-    // })
-    // this.setState({
-    //   [name]: event.target.value
+    const pay = Object.assign({}, this.state.paymentConfig, { [name]: value} );
+
+    this.setState({
+      paymentConfig: pay
+    });
+
+
+  }
+
+  onSubmit(){
+
+    // alert( Reaction.getShopId() + Packages.find({_Id: Reaction.getShopId() }));
+    //
+    // Packages.update({
+    //      name: "netsuite-sync",
+    //      shopId: Reaction.getShopId()
+    //    }, {
+    //      $set: {
+    //        "settings.email": "tert@tet.ru"
+    //      }
     // });
 
-    console.log('state', this.state);
+
+    Meteor.call("updateSttings", this.state);
+    //Meteor.call("recreateNetsuiteConnection");
+
   }
 
   render() {
@@ -81,7 +109,7 @@ class UINetSuite extends Component {
 
       if (key == "paymentConfig"){
         for (var payKey in shopSettings[key]){
-          paySet.push(<SettingsField key={payKey} type={payKey} settings={this.state.paymentConfig[payKey]} onChange={this.handleInputChangePay}/>);
+          paySet.push(<SettingsField key={payKey} type={payKey} settings={this.state.paymentConfig[payKey]} onChange={this.handleInputChangePay.bind(this)}/>);
         }
         continue;
       } else if(key == "errorEmails"){
@@ -106,6 +134,9 @@ class UINetSuite extends Component {
             <hr />
             {paySet}
             <hr />
+            <button type="submit" className="rui btn btn-danger pull-right" onClick={this.onSubmit}>
+              Save Changes
+            </button>
           </form>
         </div>
       </div>
