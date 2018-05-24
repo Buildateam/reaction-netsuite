@@ -1,4 +1,4 @@
-##Reaction Commerce <> Netsuite Bridge
+###Reaction Commerce <> Netsuite Bridge
 
 This package allows exporting orders from Reaction Commerce into Netsuite. 
 
